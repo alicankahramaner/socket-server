@@ -1,6 +1,6 @@
 {
     "http": {
-        "baseAPIUrl": "https://jsonplaceholder.typicode.com/",
+        "baseAPIUrl": "https://restcountries.eu/rest/v2/",
         "timeOut": 3000
     }
 }

@@ -15,6 +15,8 @@ export class SocketServer {
             this.clients.push(socket.client.id);
             console.log('Connected Clients: ' + this.clients.length);
 
+            socket.in('chat');
+
             socket.on('disconnect', () => {
                 this.clients = this.clients.filter(c => c !== socket.client.id);
             });
@@ -30,7 +32,8 @@ export class SocketServer {
 
         keys.forEach(s => {
             socket.on(s, (data: any) => {
-                this.sockets[s](socket, this);
+                this.sockets[s](socket, data);
+                
             })
         });
     }

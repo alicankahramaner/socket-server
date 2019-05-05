@@ -6,10 +6,151 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Socket-Server</title>
+    <style>
+        #app{
+            width: 800px;
+            display: flex;
+            flex-direction: column;
+            margin: 30px auto;
+        }
+
+        #chat{
+            border:2px solid #333;
+            box-shadow: 0px 0px 3px #333;
+            border-radius: 5px;
+            overflow-y: scroll;
+            height: 400px;
+        }
+
+        #chat p{
+            display: flex;
+            align-content: center;
+        }
+
+        #chat img{
+            width: 25px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .message{
+            display: flex;
+            margin-top: 10px;
+            justify-content: space-between;
+            height: 45px;
+        }
+
+        .message input{
+            flex-grow: 1;
+            font-size: 12pt;
+        }
+
+    </style>
 </head>
+
 
 <body>
 
+    <div id="app">
+        <h1>Socket Server - Chat Example</h1>
+        <chat v-bind:chat="chat"></chat>
+        <message :send="sendMessage"></message>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        window.addEventListener('load', () => {
+
+            const socket = io();
+
+            Vue.component('chat', {
+                props: [
+                    'chat'
+                ],
+
+                template: `
+                    <div id="chat">
+                        <div v-for="c of chat">
+                            <p><img v-bind:src="c.Flag"/><strong>{{c.Id}} :</strong>{{c.Message}}</p>
+                        </div>
+                    </div>
+                `,
+
+                updated(){
+                    let wrapper = document.getElementById('chat');
+                    wrapper.scrollTop = wrapper.scrollHeight;
+                }
+            });
+
+            Vue.component('message', {
+
+                props: [
+                    'send'
+                ],
+
+                data() {
+                    return {
+                        message: ''
+                    }
+                },
+
+                methods: {
+                    onKeyDown(e) {
+                        if (e.keyCode === 13) {
+                            this.sendMessage();
+                        }
+                    },
+
+                    sendMessage(){
+                        if(this.message !== ''){
+                            this.send(this.message);
+                            this.message = '';
+
+                        }
+                    }
+                },
+
+                template: `
+                    <div class="message">
+                        <input type="text" v-model="message" v-on:keydown="onKeyDown">
+                        <button type="button" v-on:click="sendMessage">Gönder</button>
+                    </div>
+                `
+
+            });
+
+            const app = new Vue({
+                el: '#app',
+                data: {
+                    flagCode: userLang = navigator.language || navigator.userLanguage,
+                    chat: []
+                },
+
+                methods: {
+                    getAllMessages() {
+                        socket.emit('getAllMessages');
+                    },
+
+                    sendMessage(message) {
+                        socket.emit('sendMessage', {
+                            Message: message,
+                            Flag: this.flagCode.split('-')[1]
+                        });
+                    }
+                },
+
+                mounted() {
+                    socket.on('message', (data) => {
+                        this.chat = data;
+                    });
+
+                    this.getAllMessages();
+                }
+            });
+
+        });
+    </script>
 </body>
 
 </html>

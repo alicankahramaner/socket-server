@@ -1,6 +1,5 @@
-// import { iSocket } from "../Models/baseModel";
-import { testSockets } from "./Test/testSockets";
+import { chatSockets } from "./Chat/chatSockets";
 
 export const socketCombiler: any = {
-    ...testSockets
+    ...chatSockets
 }
