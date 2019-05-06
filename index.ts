@@ -8,6 +8,8 @@ import { socketCombiler } from './src/Sockets/socketCombiler';
 const app: express.Application = express();
 const httpServer = http.createServer(app);
 
+app.use(express.static('static'));
+
 app.get('/', function (req, res) {
     res.sendFile(path.resolve(__dirname, 'index.html'))
 });
