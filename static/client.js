@@ -61,7 +61,7 @@ window.addEventListener('load', () => {
     const app = new Vue({
         el: '#app',
         data: {
-            flagCode: userLang = navigator.language || navigator.userLanguage,
+            languageCode: '',
             chat: []
         },
 
@@ -71,14 +71,19 @@ window.addEventListener('load', () => {
             },
 
             sendMessage(message) {
+
                 socket.emit('sendMessage', {
                     Message: message,
-                    Flag: this.flagCode.split('-')[1]
+                    Flag: this.languageCode
                 });
             }
         },
 
         mounted() {
+
+            let code = (navigator.language || navigator.userLanguage).split('-');
+            this.languageCode = code[code.length-1];
+
             socket.on('message', (data) => {
                 this.chat = data;
             });
